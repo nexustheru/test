@@ -1,0 +1,50 @@
+#include <iostream>
+#include <windows.h>
+#include <string>
+#include <stdio.h>
+#include <Windows.h>
+#include <tchar.h>
+
+
+
+#define DLL_API __declspec(dllexport)
+
+DLL_API BOOL APIENTRY DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
+{
+
+    TCHAR pszMessage[1024] = { 0 };
+    _stprintf_s(pszMessage, _T("GetCurrentProcessId() %d, hModule 0x%p, nReason %d\r\n"), GetCurrentProcessId(), hinstDLL, fdwReason);
+    OutputDebugString(pszMessage);
+    switch (fdwReason) 
+    {
+
+        // The DLL is being loaded into the virtual address space of the current process as a result of the process starting up
+    case DLL_PROCESS_ATTACH:
+        // Perform initialization tasks here
+        std::cout << "process attached: "  << std::endl;
+        MessageBox(NULL, L"DLL attached to process!", L"Process Attach", MB_OK | MB_ICONINFORMATION);
+        break;
+
+        // The DLL is being unloaded from the virtual address space of the current process
+    case DLL_PROCESS_DETACH:
+        // Perform cleanup tasks here
+        std::cout << "process dettached: " << std::endl;
+        MessageBox(NULL, L"DLL detached from process!", L"Process Detach", MB_OK | MB_ICONINFORMATION);
+        break;
+
+        // The DLL is being loaded into the virtual address space of the current process and the system calls the DllMain function with this value
+    case DLL_THREAD_ATTACH:
+        std::cout << "thread attached: " << std::endl;
+        // Perform tasks when a thread is created
+        MessageBox(NULL, L"DLL attached thread to process!", L"Thread Attach", MB_OK | MB_ICONINFORMATION);
+        break;
+
+        // The DLL is being unloaded from the virtual address space of the current process because the process is exiting or the DLL has been freed manually
+    case DLL_THREAD_DETACH:
+        std::cout << "thread dettached: " << std::endl;
+        // Perform tasks when a thread is about to exit
+        MessageBox(NULL, L"DLL detached thread to process!", L"Thread Dettach", MB_OK | MB_ICONINFORMATION);
+        break;
+    }
+    return TRUE; // Indicate succes
+}
