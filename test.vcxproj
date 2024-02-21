@@ -138,6 +138,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Program Files\Mono\include\mono-2.0</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -184,21 +185,32 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Tess\Documents\Visual Studio 2017\Projects\freeglut-3.2.1\freeglut-3.2.1\include;C:\Users\Tess\Documents\Visual Studio 2017\glfw-3.3.7.bin.WIN64\include;E:\vs projects\MyMods\release\_deps\imgui-src;C:\Program Files\Mono\include\mono-2.0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Tess\Documents\Visual Studio 2017\Projects\freeglut\include;C:\Users\Tess\Documents\Visual Studio 2017\glfw-3.3.7.bin.WIN64\include;E:\vs projects\MyMods\release\_deps\imgui-src;C:\Program Files\Mono\include\mono-2.0;C:\Users\Tess\Documents\Visual Studio 2017\Projects\glew-2.1.0\include;C:\Users\Tess\Documents\Visual Studio 2017\Projects\Lua\lua-5.4.6\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\Tess\Documents\Visual Studio 2017\glfw-3.3.7.bin.WIN64\lib-vc2022;C:\Users\Tess\Documents\Visual Studio 2017\Projects\freeglut-3.2.1\freeglut-3.2.1\rel\lib\Release;E:\vs projects\MyMods\release\Output\Game__Shipping__Win64\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>freeglut.lib;glfw3.lib;ImGui.lib;Dbghelp.lib;C:\Program Files\Mono\lib\mono-2.0-sgen.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Tess\Documents\Visual Studio 2017\glfw-3.3.7.bin.WIN64\lib-vc2022;C:\Users\Tess\Documents\Visual Studio 2017\Projects\freeglut\rel\lib\Release;E:\vs projects\MyMods\release\Output\Game__Shipping__Win64\bin;C:\Users\Tess\Documents\Visual Studio 2017\Projects\Lua\Release\lua-5.4.6\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>freeglut.lib;glfw3.lib;ImGui.lib;Dbghelp.lib;C:\Program Files\Mono\lib\mono-2.0-sgen.lib;C:\Users\Tess\Documents\Visual Studio 2017\Projects\glew-2.1.0\rel\lib\Release\glew.lib;lua_shared.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="imguii.cpp" />
+    <ClCompile Include="luall.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="monos.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="imguii.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="luall.h" />
+    <ClInclude Include="monos.h" />
+    <ClInclude Include="openglfunc.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="worker.h" />
   </ItemGroup>

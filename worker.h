@@ -11,10 +11,14 @@
 #include <dbghelp.h>
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
-//m_UWorld = reinterpret_cast<UWorld**>(BaseAddress + 0x926DA38);
+#include <filesystem>
 
+namespace fs = std::filesystem;
+//m_UWorld = reinterpret_cast<UWorld**>(BaseAddress + 0x926DA38);
+void* mainfun;
+typedef int (*mainfunType)(int);
 typedef int (*FunctionPtr)(int, int);
-static int malloc_count = 0;
+
 //Injectors exe
 int listdllfunc()
 {
@@ -162,7 +166,7 @@ void EnumerateExportedFunctions(HMODULE hModule)
         return;
     }
 
-    std::cout << "Exported functions in module " << moduleName << ":" << std::endl;
+    std::cout << "Exported functions in module "  << (char)moduleName << ":" << std::endl;
 
     // Enumerate exported functions
     DWORD dwSize;
@@ -223,7 +227,6 @@ void EnumerateModules(DWORD processId)
     CloseHandle(hProcess);
 }
 
-
 bool InjectDLL(DWORD processID, const char* dllPath)
 {
     // Open target process
@@ -252,7 +255,7 @@ bool InjectDLL(DWORD processID, const char* dllPath)
     }
 
     // Get the address of the LoadLibraryA function in the target process
-    LPVOID loadLibraryAddr = (LPVOID)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryA");
+    LPVOID loadLibraryAddr = (LPVOID)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryW");
     if (loadLibraryAddr == NULL) {
         std::cout << "Failed to get address of LoadLibraryA function. Error code: " << GetLastError() << std::endl;
         VirtualFreeEx(hProcess, dllPathAddr, 0, MEM_RELEASE);
@@ -276,79 +279,47 @@ bool InjectDLL(DWORD processID, const char* dllPath)
     VirtualFreeEx(hProcess, dllPathAddr, 0, MEM_RELEASE);
     CloseHandle(hThread);
     CloseHandle(hProcess);
-
     std::cout << "DLL injected successfully." << std::endl;
     return true;
 }
 
-//mono
-void monoi_output_methods(MonoClass* klass)
+void getfile_in_Folder(std::string folderpath)
 {
-    MonoMethod* method;
-    void* iter = NULL;
 
-    while ((method = mono_class_get_methods(klass, &iter)))
+    try
     {
-        UINT32 flags, iflags;
-        flags = mono_method_get_flags(method, &iflags);
-        printf("Method: %s, flags 0x%x, iflags 0x%x\n",
-            mono_method_get_name(method), flags, iflags);
-    }
-}
-
-void* monoi_custom_malloc(size_t bytes)
-{
-    ++malloc_count;
-    return malloc(bytes);
-}
-
-std::vector<MonoClass*> monoi_GetAssemblyClassList(MonoImage* image)
-{
-    std::vector<MonoClass*> class_list;
-
-    const MonoTableInfo* table_info = mono_image_get_table_info(image, MONO_TABLE_TYPEDEF);
-
-    int rows = mono_table_info_get_rows(table_info);
-
-    /* For each row, get some of its values */
-    for (int i = 0; i < rows; i++)
-    {
-        MonoClass* _class = nullptr;
-        uint32_t cols[MONO_TYPEDEF_SIZE];
-        mono_metadata_decode_row(table_info, i, cols, MONO_TYPEDEF_SIZE);
-        const char* name = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAME]);
-        const char* name_space = mono_metadata_string_heap(image, cols[MONO_TYPEDEF_NAMESPACE]);
-        _class = mono_class_from_name(image, name_space, name);
-        class_list.push_back(_class);
-    }
-    return class_list;
-}
-
-MonoClass* monoi_returnClasses(MonoImage* image)
-{
-    std::vector<MonoClass*> netclasses = monoi_GetAssemblyClassList(image);
-    for (int i = 0; i < netclasses.size(); i++)
-    {
-        return netclasses.at(i);
-
-    }
-    return NULL;
-}
-
-void monoi(const char* yourapplicationname,const char* dllname, const char* yournamespace, const char* yourclassname)
-{
-    MonoDomain* domain = mono_jit_init(yourapplicationname);
-    MonoAssembly* assembly = mono_domain_assembly_open(domain, dllname);
-    if (assembly) 
-    {
-        MonoImage* image = mono_assembly_get_image(assembly);
-        MonoClass* mclass = mono_class_from_name(image, yournamespace, yourclassname);
-        if (mclass) 
+        for (const auto& entry : fs::directory_iterator(folderpath))
         {
-            MonoObject* obj = mono_object_new(domain, mclass);
-            mono_runtime_object_init(obj);
-            // You can now call methods or access properties on the object if needed
+            if (fs::is_regular_file(entry))
+            {
+                std::cout << entry.path().filename() << '\n';
+            }
         }
     }
-    mono_jit_cleanup(domain);
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << '\n';
+    }
+
+}
+
+int CustomFunction(int arg)
+{
+    std::cout << "CustomFunction called with arg: " << arg << std::endl;
+    // Call the original function
+    mainfunType pfnOriginalFunction = (mainfunType)mainfun;
+    return pfnOriginalFunction(arg);
+}
+
+void HookFunction(void* pFunction, void* pDetour)
+{
+    DWORD oldProtect;
+    VirtualProtect(pFunction, 5, PAGE_EXECUTE_READWRITE, &oldProtect);
+
+    // Create a relative jump to the detour function
+    DWORD relativeAddress = ((DWORD)pDetour - (DWORD)pFunction - 5);
+    *(BYTE*)pFunction = 0x00; // JMP opcode
+    memcpy((BYTE*)pFunction + 1, &relativeAddress, sizeof(DWORD));
+
+    VirtualProtect(pFunction, 5, oldProtect, &oldProtect);
 }

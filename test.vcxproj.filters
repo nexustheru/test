@@ -18,12 +18,36 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="monos.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="imguii.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luall.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="worker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="openglfunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="imguii.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="monos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

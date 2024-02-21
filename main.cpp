@@ -2,25 +2,36 @@
 #include "worker.h"
 #include "render.h"
 
+
+#include <windows.h>
+#include <iostream>
+#include <print>
+#include <thread>
+using namespace std;
+
+
 int main()
 {
-  //render();
 
-    std::wstring processName = L"notepad++.exe"; // Replace this with the process name you want to find
-   DWORD processId = GetProcessIdByName(processName);
-    if (processId) 
-    {
-        std::wcout << L"Process found! Process ID: " << processId << std::endl;
-        HMODULE hModule = GetModuleHandle(L"notepad++.exe");
-        uintptr_t baseAddress = reinterpret_cast<uintptr_t>(hModule);
-        std::cout << "Base Address: 0x" << std::hex << baseAddress << std::endl;
-    }
-    else
-    {
-        std::wcerr << L"Process not found." << std::endl;
-    }
+
+    //DWORD processId = GetProcessIdByName(L"programtoinject.exe");
+    //const char* dllPath = "testdll.dll";
+    //if (processId) 
+    //{
+   // compileruntime();
+   // monoInit();
+   // monoclean();
+    /*auto mypath = "E:/vs projects/test/x64/Release";
+    getfile_in_Folder(mypath);*/
+    //}
+    //else
+    //{
+        //std::cout << "Process not found." << std::endl;
+    //}
    
-   
+    std::thread t(render);
+    t.join();
+  
   system("PAUSE");
   return 0;
 }
